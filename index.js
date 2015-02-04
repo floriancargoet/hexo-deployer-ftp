@@ -15,7 +15,7 @@ function run (command, args, callback) {
     process.stdin.resume();
     return callback();
   });
-};
+}
 
 hexo.extend.deployer.register('ftp', function (args, callback) {
   var config = hexo.config.deploy;
@@ -38,15 +38,17 @@ hexo.extend.deployer.register('ftp', function (args, callback) {
     return callback();
   }
 
-  var args = [
+  var ftpArgs = [
     '-e',
-    'mirror -R --ignore-time --delete -v ' + public_dir + ' ' + config.root + '; bye',
+    (args.f || args.force) ?
+      'mirror -R               --delete -v ' + public_dir + ' ' + config.root + '; bye' :
+      'mirror -R --ignore-time --delete -v ' + public_dir + ' ' + config.root + '; bye',
     '-u',
     config.user,
     config.host
   ];
 
-  run('lftp', args, function (code) {
+  run('lftp', ftpArgs, function (code) {
     callback();
   });
 });
